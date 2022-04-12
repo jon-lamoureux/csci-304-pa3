@@ -1,6 +1,12 @@
+# Author: Jonathan Lamoureux and Thomas Anderson
+# Usage: python3 ping.py
+# Options: -n count
+# Specifies the number of pings sent to the server
 import time
 from socket import *
 import time
+import sys
+
 # Set up server variables
 serverName = '127.0.0.1'
 serverPort = 12050
@@ -12,6 +18,11 @@ packets_lost = 0
 message = "This string is actually 32 bytes"
 numBytes = len(message)
 response_times = []
+
+if 0 <= 2 < len(sys.argv):
+    if sys.argv[1] == "-n":
+        number_of_pings = int(sys.argv[2])
+
 # Send packet to server
 print("Pinging %s with %d bytes of data:" % (serverName, numBytes))
 for i in range(number_of_pings):
