@@ -62,8 +62,10 @@ def simulatePing(serverName, serverPort, timeout, numPings):
     text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
     text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
     clientSocket.close()
-def simulateTrace(ipAddr, maxHops):
-    return 1;
+def simulateTrace(ipAddr, numPort, maxHops):
+    trace_input.delete("1.0", "end")
+    trace_input.insert('1.0', "Tracing route to %s\n" % (ipAddr))
+    trace_input.insert('2.0', "over a maximuim of %d hops:\n\n" % (maxHops))
 ## PING GUI ##
 entry1 = tk.Entry(frame1, width=15)
 entry1.insert(0, "127.0.0.1")
@@ -118,6 +120,6 @@ trace_entry3.place(x=220, y=275)
 trace_label3.pack()
 trace_label3.place(x=220, y=250)
 
-button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(trace_entry1.get(), int(trace_entry2.get())), width=10, height=1)
+button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(trace_entry1.get(), int(trace_entry2.get()), int(trace_entry3.get())), width=10, height=1)
 button2.place(x=480,y=260)
 root.mainloop()
