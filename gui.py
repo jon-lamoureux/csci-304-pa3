@@ -28,6 +28,10 @@ notebook.add(frame2, text='Traceroute')
 text_input = tk.Text(frame1, height=15, width=100)
 text_input.pack()
 
+trace_input = tk.Text(frame2, height=15, width=100)
+trace_input.pack()
+trace_input.place(x=0, y=0)
+
 def simulatePing(serverName, serverPort, timeout, numPings):
     # Create varaible for ping functionality
     clientSocket = socket(AF_INET, SOCK_DGRAM)
@@ -58,6 +62,9 @@ def simulatePing(serverName, serverPort, timeout, numPings):
     text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
     text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
     clientSocket.close()
+def simulateTrace():
+    print("test")
+    return 1;
 entry1 = tk.Entry(frame1, width=15)
 entry1.insert(0, "127.0.0.1")
 label1 = tk.Label(frame1, text="IP Address")
@@ -85,4 +92,6 @@ entry4.place(x=320, y=275)
 label4.place(x=320, y=250)
 button = tk.Button(frame1, text="Ping", command=lambda: simulatePing(entry1.get(), int(entry2.get()),  int(entry3.get()), int(entry4.get())), width=10, height=1)
 button.place(x=480,y=260)
+button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(), width=10, height=1)
+button2.place(x=480,y=260)
 root.mainloop()
