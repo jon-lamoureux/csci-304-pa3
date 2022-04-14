@@ -1,0 +1,76 @@
+# Author: Jonathan Lamoureux
+from socket import *
+import time
+import sys
+import tkinter as tk
+from tkinter import ttk
+
+# root window
+root = tk.Tk()
+root.geometry('600x400')
+root.title('Network Analysis Tools')
+
+# create a notebook
+notebook = ttk.Notebook(root)
+notebook.pack(pady=10, expand=True)
+
+# create frames
+frame1 = ttk.Frame(notebook, width=600, height=380)
+frame2 = ttk.Frame(notebook, width=600, height=380)
+
+frame1.pack(fill='both', expand=True)
+frame2.pack(fill='both', expand=True)
+
+# add frames to notebook
+notebook.add(frame1, text='Ping')
+notebook.add(frame2, text='Traceroute')
+
+text_input = tk.Text(frame1, height=15, width=100)
+text_input.pack()
+
+def simulatePing(serverName, serverPort, timeout, numPings):
+    # Create varaible for ping functionality
+    clientSocket = socket(AF_INET, SOCK_DGRAM)
+    packets_received = 0
+    packets_lost = 0
+    message = "This string is actually 32 bytes"
+    numBytes = len(message)
+    response_times = []
+
+    # Send packet to server
+    text_input.delete("1.0", "end")
+    text_input.insert('1.0', "Pinging %s with %d bytes of data:\n" % (serverName, numBytes))
+    for i in range(numPings):
+        start = time.perf_counter()
+        clientSocket.sendto(message.encode(), (serverName, serverPort))
+        clientSocket.settimeout(timeout / 1000)
+        try:
+            servResponse, serverAddress = clientSocket.recvfrom(2048)
+            end = time.perf_counter() - start
+            text_input.insert('%d.0' % (i + 2), "Reply from %s: bytes=%d time=%dms TTL=%d\n" % (serverName, numBytes, int(round(end * 1000)), 56))
+            packets_received += 1;
+            response_times.append(int(round(end * 1000)))
+        except:
+            text_input.insert('%d.0' % (i + 2), "Request timed out\n")
+            packets_lost += 1;
+    text_input.insert('%d.0' % int(numPings + 3), "Ping statistics for %s:\n" % serverName)
+    text_input.insert('%d.0' % int(numPings + 4), "\tPackets: Sent = %d, Received = %d, Lost = %d (%d%s loss),\n" % (numPings, packets_received, packets_lost, (packets_lost / numPings) * 100, "%"))
+    text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
+    text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
+    clientSocket.close()
+entry1 = tk.Entry(frame1, width=20)
+entry1.insert(0, "127.0.0.1")
+entry2 = tk.Entry(frame1, width=20)
+entry2.insert(0, "12050")
+entry3 = tk.Entry(frame1, width=20)
+entry3.insert(0, "1000")
+entry4 = tk.Entry(frame1,  width=20)
+entry4.insert(0, "5")
+entry1.pack()
+entry2.pack()
+entry3.pack()
+entry4.pack()
+button = tk.Button(frame1, text="Submit", command=lambda: simulatePing(entry1.get(), int(entry2.get()),  int(entry3.get()), int(entry4.get())))
+button.place(x=20,y=180)
+
+root.mainloop()
