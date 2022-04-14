@@ -62,9 +62,9 @@ def simulatePing(serverName, serverPort, timeout, numPings):
     text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
     text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
     clientSocket.close()
-def simulateTrace():
-    print("test")
+def simulateTrace(ipAddr, maxHops):
     return 1;
+## PING GUI ##
 entry1 = tk.Entry(frame1, width=15)
 entry1.insert(0, "127.0.0.1")
 label1 = tk.Label(frame1, text="IP Address")
@@ -92,6 +92,32 @@ entry4.place(x=320, y=275)
 label4.place(x=320, y=250)
 button = tk.Button(frame1, text="Ping", command=lambda: simulatePing(entry1.get(), int(entry2.get()),  int(entry3.get()), int(entry4.get())), width=10, height=1)
 button.place(x=480,y=260)
-button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(), width=10, height=1)
+
+## TRACEROUTE GUI ##
+trace_entry1 = tk.Entry(frame2, width=15)
+trace_entry1.insert(0, "127.0.0.1")
+trace_label1 = tk.Label(frame2, text="IP Address")
+trace_entry1.pack()
+trace_entry1.place(x=20, y=275)
+trace_label1.pack()
+trace_label1.place(x=20, y=250)
+
+trace_entry2 = tk.Entry(frame2, width=15)
+trace_entry2.insert(0, "12050")
+trace_label2 = tk.Label(frame2, text="Port")
+trace_entry2.pack()
+trace_entry2.place(x=120, y=275)
+trace_label2.pack()
+trace_label2.place(x=120, y=250)
+
+trace_entry3 = tk.Entry(frame2, width=15)
+trace_entry3.insert(0, "30")
+trace_label3 = tk.Label(frame2, text="Max Hops")
+trace_entry3.pack()
+trace_entry3.place(x=220, y=275)
+trace_label3.pack()
+trace_label3.place(x=220, y=250)
+
+button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(trace_entry1.get(), int(trace_entry2.get())), width=10, height=1)
 button2.place(x=480,y=260)
 root.mainloop()
