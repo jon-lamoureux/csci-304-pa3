@@ -1,4 +1,5 @@
-# Author: Jonathan Lamoureux
+# Author: Jonathan Lamoureux & Thomas Anderson
+
 from socket import *
 import time
 import sys
@@ -62,10 +63,50 @@ def simulatePing(serverName, serverPort, timeout, numPings):
     text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
     text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
     clientSocket.close()
-def simulateTrace(ipAddr, numPort, maxHops):
-    trace_input.delete("1.0", "end")
-    trace_input.insert('1.0', "Tracing route to %s\n" % (ipAddr))
-    trace_input.insert('2.0', "over a maximuim of %d hops:\n\n" % (maxHops))
+   
+def trace(dest, port_num, max_hops):
+    #define protocols and general definitions
+    proto_icmp = getprotobyname('icmp')
+    proto_udp = getprotobyname('udp')
+    port = port_num
+    maxHops = max_hops
+    time = 1
+
+    text_input.insert('1.0','Test')
+
+    dAddr = gethostbyname(dest)
+    trace_input.insert('1.0', "Performing traceroute to %s (%s)\n" % (dest, dAddr))
+
+    for time_to_live in range(1, maxHops + 1):
+        clientSocket = socket(AF_INET, SOCK_RAW, proto_icmp)
+        clientSocket.settimeout(time)
+        probeSocket = socket(AF_INET, SOCK_DGRAM, proto_udp)
+
+        clientSocket.bind(('', port))
+        probeSocket.setsockopt(SOL_IP, IP_TTL, time_to_live)
+        probeSocket.sendto(''.encode(), (dAddr, port))
+
+        try:
+            data, cAddr = clientSocket.recvfrom(512)
+            cAddr = cAddr[0]
+        except error:
+            cAddr = None
+        finally:
+            clientSocket.close()
+            probeSocket.close()
+
+        yield cAddr
+
+        if cAddr == dAddr:
+            trace_input.insert("\nDestination Reached")
+            break
+
+    dAddr = gethostbyname(dest)
+    trace_input.insert("Performing traceroute to %s (%s)\n" % (dest, dAddr))
+    trace_input.insert("# \t IP \t Resolved Name\n")
+    for i, v in enumerate(trace(dAddr)):
+        trace_input.insert("%d\t%s" % (i+1, v))
+
 ## PING GUI ##
 entry1 = tk.Entry(frame1, width=15)
 entry1.insert(0, "127.0.0.1")
@@ -97,15 +138,15 @@ button.place(x=480,y=260)
 
 ## TRACEROUTE GUI ##
 trace_entry1 = tk.Entry(frame2, width=15)
-trace_entry1.insert(0, "127.0.0.1")
-trace_label1 = tk.Label(frame2, text="IP Address")
+trace_entry1.insert(0, "google.com")
+trace_label1 = tk.Label(frame2, text="URL")
 trace_entry1.pack()
 trace_entry1.place(x=20, y=275)
 trace_label1.pack()
 trace_label1.place(x=20, y=250)
 
 trace_entry2 = tk.Entry(frame2, width=15)
-trace_entry2.insert(0, "12050")
+trace_entry2.insert(0, "33434")
 trace_label2 = tk.Label(frame2, text="Port")
 trace_entry2.pack()
 trace_entry2.place(x=120, y=275)
@@ -120,6 +161,6 @@ trace_entry3.place(x=220, y=275)
 trace_label3.pack()
 trace_label3.place(x=220, y=250)
 
-button2 = tk.Button(frame2, text="Trace Route", command=lambda: simulateTrace(trace_entry1.get(), int(trace_entry2.get()), int(trace_entry3.get())), width=10, height=1)
+button2 = tk.Button(frame2, text="Trace Route", command=lambda: list(trace(trace_entry1.get(), int(trace_entry2.get()), int(trace_entry3.get()))), width=10, height=1)
 button2.place(x=480,y=260)
 root.mainloop()
