@@ -1,5 +1,6 @@
 # Points of reference: https://blogs.oracle.com/linux/post/learning-by-doing-writing-your-own-traceroute-in-8-easy-steps
-# Author: Thomas Anderson
+# Authors: Jonathan Lamoureux and Thomas Anderson
+# Usage: python3 trace.py <url>
 
 from sys import *
 from socket import *
