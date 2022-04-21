@@ -1,4 +1,4 @@
-# Author: Jonathan Lamoureux and Thomas Anderson
+# Authors: Jonathan Lamoureux and Thomas Anderson
 # Usage: python3 ping.py
 # Options: -n count
 # Specifies the number of pings sent to the server
