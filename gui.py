@@ -63,7 +63,7 @@ def simulatePing(serverName, serverPort, timeout, numPings):
     text_input.insert('%d.0' % int(numPings + 5), "Approximate round trip time in milli-seconds:\n")
     text_input.insert('%d.0' % int(numPings + 6), "\tMinimum = %dms, Maximum %dms, Average %dms\n" % (max(response_times), min(response_times), sum(response_times) / len(response_times)))
     clientSocket.close()
-   
+
 def trace(dest, port_num, max_hops):
     #define protocols and general definitions
     proto_icmp = getprotobyname('icmp')
@@ -71,21 +71,20 @@ def trace(dest, port_num, max_hops):
     port = port_num
     maxHops = max_hops
     time = 1
-    
-    dAddr = gethostbyname(dest)
-    trace_input.insert('1.0', "Performing traceroute to %s (%s)\n" % (dest, dAddr))
 
     for time_to_live in range(1, maxHops + 1):
         clientSocket = socket(AF_INET, SOCK_RAW, proto_icmp)
         clientSocket.settimeout(time)
         probeSocket = socket(AF_INET, SOCK_DGRAM, proto_udp)
 
+        dAddr = gethostbyname(dest)
+        
         clientSocket.bind(('', port))
         probeSocket.setsockopt(SOL_IP, IP_TTL, time_to_live)
         probeSocket.sendto(''.encode(), (dAddr, port))
 
         try:
-            data, cAddr = clientSocket.recvfrom(512)
+            data, cAddr = clientSocket.recvfrom(512)        
             cAddr = cAddr[0]
         except error:
             cAddr = None
@@ -96,14 +95,15 @@ def trace(dest, port_num, max_hops):
         yield cAddr
 
         if cAddr == dAddr:
-            trace_input.insert("\nDestination Reached")
+            trace_input.insert('1.0', "\nDestination Reached\n")
             break
 
+def tracert(dest, port, maxHops):
     dAddr = gethostbyname(dest)
-    trace_input.insert("Performing traceroute to %s (%s)\n" % (dest, dAddr))
-    trace_input.insert("# \t IP \t Resolved Name\n")
-    for i, v in enumerate(trace(dAddr)):
-        trace_input.insert("%d\t%s" % (i+1, v))
+    trace_input.insert('1.0', "Performing traceroute to %s (%s) \n" % (dest, dAddr))
+    trace_input.insert('1.0', "# \t IP \t\n")
+    for i, j in enumerate(trace(dAddr, port, maxHops)):
+        trace_input.insert('1.0', "%d\t%s\n" % (i+1, j))
 
 ## PING GUI ##
 entry1 = tk.Entry(frame1, width=15)
@@ -159,6 +159,6 @@ trace_entry3.place(x=220, y=275)
 trace_label3.pack()
 trace_label3.place(x=220, y=250)
 
-button2 = tk.Button(frame2, text="Trace Route", command=lambda: list(trace(trace_entry1.get(), int(trace_entry2.get()), int(trace_entry3.get()))), width=10, height=1)
+button2 = tk.Button(frame2, text="Trace Route", command=lambda: list(tracert(trace_entry1.get(), int(trace_entry2.get()), int(trace_entry3.get()))), width=10, height=1)
 button2.place(x=480,y=260)
 root.mainloop()
