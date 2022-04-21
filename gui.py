@@ -1,4 +1,4 @@
-#Author: Jonathan Lamoureux & Thomas Anderson
+# Authors: Jonathan Lamoureux & Thomas Anderson
 
 from socket import *
 import time
