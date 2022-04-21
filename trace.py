@@ -1,4 +1,5 @@
 # Points of reference: https://blogs.oracle.com/linux/post/learning-by-doing-writing-your-own-traceroute-in-8-easy-steps
+# Author: Thomas Anderson
 
 from sys import *
 from socket import *
@@ -36,7 +37,7 @@ def trace(dest):
             print("\nDestination Reached")
             break
 
-if __name__ == "__main__":
+if __name__ == "__main__": # main loop
     dest = argv[1]
     dAddr = gethostbyname(dest)
     print("Performing traceroute to %s (%s)\n" % (dest, dAddr))
