@@ -1,4 +1,4 @@
-# Author: Jonathan Lamoureux & Thomas Anderson
+#Author: Jonathan Lamoureux & Thomas Anderson
 
 from socket import *
 import time
@@ -71,9 +71,7 @@ def trace(dest, port_num, max_hops):
     port = port_num
     maxHops = max_hops
     time = 1
-
-    text_input.insert('1.0','Test')
-
+    
     dAddr = gethostbyname(dest)
     trace_input.insert('1.0', "Performing traceroute to %s (%s)\n" % (dest, dAddr))
 
